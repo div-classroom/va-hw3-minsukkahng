@@ -21,17 +21,17 @@
 		for (let k = 0; k < numClasses; ++k) {
 			let binsForClass = [];
 			for (let b = 0; b < numBins; ++b) {
-				binsForClass.push({"class": k, "binNo": b, "instances": []});
+				binsForClass.push({
+					"class": k,
+					"binNo": b,
+					"instances": instances.filter(instance =>
+						k == instance.true_label &&
+						b == Math.min(Math.floor(instance.predicted_scores[instance.true_label] * numBins), numBins - 1)
+					)});
 			}
 			binsByClasses.push({"class": k, "bins": binsForClass});
 		}
 		console.log(binsByClasses);
-
-		instances.forEach(instance => {
-			
-
-		});
-
 		
 
 	});
@@ -65,8 +65,19 @@
 			<div id="score-distributions-view" class="view-panel">
 				<div class="view-title">Score Distributions</div>
 				<svg >
+					{#if instances !== undefined}
+						{#each binsByClasses as binsForClass}
+							<g transform="translate(0, {binsForClass.class * 20 + 15})">
+								<text>{binsForClass.class}</text>
 
-
+								{#each binsForClass.bins as bin}
+									<g transform="translate({bin.binNo * 25 + 50}, 0)">
+										<text>{bin.instances.length}</text>
+									</g>
+								{/each}
+							</g>
+						{/each}
+					{/if}
 				</svg>
 			</div>
 		</div>
